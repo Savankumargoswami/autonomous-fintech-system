@@ -1,1 +1,78 @@
+# Backend Dockerfile - Production Ready
+FROM python:3.10-slim
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app:$PYTHONPATH
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    build-essential \
+    curl \
+    libpq-dev \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install TA-Lib dependencies (required for technical analysis)
+RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+    tar -xzf ta-lib-0.4.0-src.tar.gz && \
+    cd ta-lib && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+
+# Copy requirements first for better caching
+COPY backend/requirements.txt ./requirements.txt
+
+# Upgrade pip and install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Create necessary directories
+RUN mkdir -p /app/backend \
+             /app/ml_models \
+             /app/logs \
+             /app/data \
+             /app/ml_models/trained_models
+
+# Copy backend code
+COPY backend/ /app/backend/
+
+# Copy ML models
+COPY ml_models/ /app/ml_models/
+
+# Copy any additional files if they exist
+COPY *.py /app/ 2>/dev/null || :
+
+# Create a non-root user for security
+RUN useradd -m -u 1000 fintech && \
+    chown -R fintech:fintech /app
+
+# Switch to non-root user
+USER fintech
+
+# Expose the application port
+EXPOSE 5000
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5000/api/health || exit 1
+
+# Run the application with gunicorn
+CMD ["gunicorn", \
+     "--worker-class", "eventlet", \
+     "-w", "1", \
+     "--bind", "0.0.0.0:5000", \
+     "--timeout", "120", \
+     "--log-level", "info", \
+     "--access-logfile", "/app/logs/access.log", \
+     "--error-logfile", "/app/logs/error.log", \
+     "backend.app:app"]
