@@ -1,1 +1,317 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+*.env
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# React/Frontend
+frontend/build/
+frontend/.pnp
+.pnp.js
+
+# Testing coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Production
+build/
+dist/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.rdb
+
+# ML Models and data
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.bin
+*.model
+ml_models/trained_models/*
+!ml_models/trained_models/.gitkeep
+data/*
+!data/.gitkeep
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+.temp/
+.tmp/
+tmp/
+temp/
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+*.der
+*.p7b
+*.p12
+*.pfx
+
+# OS files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.msi
+*.msm
+*.msp
+
+# Secrets and credentials
+secrets/
+credentials/
+*.secret
+*.private
+private/
+
+# Backup files
+*.backup
+*.bck
+*.old
+backup/
+backups/
+
+# Cache
+.cache/
+*.cache
+cache/
+
+# Session
+flask_session/
+sessions/
+*.session
+
+# Upload folders
+uploads/
+uploaded_files/
+media/
+
+# Static files (if generated)
+staticfiles/
+static_root/
+
+# Local configuration
+local_config.py
+local_settings.py
+config.local.js
+
+# Documentation build
+docs/_build/
+site/
+
+# Monitoring
+grafana-storage/
+prometheus-data/
+
+# Miscellaneous
+*.pid
+*.seed
+*.pid.lock
+.grunt
+.lock-wscript
+.npm
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.parcel-cache
+.next
+out
+.nuxt
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.yarn-integrity
+
+# Keep these files
+!.gitkeep
+!.dockerignore
+!.eslintrc.js
+!.prettierrc
