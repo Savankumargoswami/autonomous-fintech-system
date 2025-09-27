@@ -353,3 +353,141 @@ class DataFetcher:
         df['rsi'] = self._calculate_rsi(df['close'])
         
         # MACD
+        ema_12 = df['close'].ewm(span=12).mean()
+        ema_26 = df['close'].ewm(span=26).mean()
+        df['macd'] = ema_12 - ema_26
+        df['signal'] = df['macd'].ewm(span=9).mean()
+        
+        # Bollinger Bands
+        sma_20 = df['close'].rolling(window=20).mean()
+        std_20 = df['close'].rolling(window=20).std()
+        df['bb_upper'] = sma_20 + (2 * std_20)
+        df['bb_lower'] = sma_20 - (2 * std_20)
+        
+        # Moving averages
+        df['sma_20'] = sma_20
+        df['sma_50'] = df['close'].rolling(window=50).mean()
+        df['ema_12'] = ema_12
+        df['ema_26'] = ema_26
+        
+        return df
+    
+    def _calculate_rsi(self, prices: pd.Series, period: int = 14) -> pd.Series:
+        """Calculate RSI"""
+        delta = prices.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        return rsi.fillna(50)
+    
+    def _get_news_newsapi(self, symbol: str) -> List[Dict]:
+        """Get news from NewsAPI"""
+        if not self.api_keys['news_api']:
+            return []
+        
+        try:
+            url = f"{self.base_urls['news_api']}/everything"
+            params = {
+                'q': symbol,
+                'apiKey': self.api_keys['news_api'],
+                'sortBy': 'relevancy',
+                'pageSize': 5
+            }
+            
+            response = requests.get(url, params=params, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                
+                news = []
+                for article in articles:
+                    news.append({
+                        'title': article.get('title'),
+                        'description': article.get('description'),
+                        'url': article.get('url'),
+                        'published': article.get('publishedAt'),
+                        'source': article.get('source', {}).get('name')
+                    })
+                
+                return news
+        except Exception as e:
+            logger.debug(f"NewsAPI fetch failed: {e}")
+        
+        return []
+    
+    def _get_news_finnhub(self, symbol: str) -> List[Dict]:
+        """Get news from Finnhub"""
+        if not self.api_keys['finnhub']:
+            return []
+        
+        try:
+            url = f"{self.base_urls['finnhub']}/company-news"
+            today = datetime.now()
+            week_ago = today - timedelta(days=7)
+            
+            params = {
+                'symbol': symbol,
+                'from': week_ago.strftime('%Y-%m-%d'),
+                'to': today.strftime('%Y-%m-%d'),
+                'token': self.api_keys['finnhub']
+            }
+            
+            response = requests.get(url, params=params, timeout=5)
+            if response.status_code == 200:
+                articles = response.json()
+                
+                news = []
+                for article in articles[:5]:
+                    news.append({
+                        'title': article.get('headline'),
+                        'description': article.get('summary'),
+                        'url': article.get('url'),
+                        'published': datetime.fromtimestamp(article.get('datetime', 0)).isoformat(),
+                        'source': article.get('source')
+                    })
+                
+                return news
+        except Exception as e:
+            logger.debug(f"Finnhub news fetch failed: {e}")
+        
+        return []
+    
+    def _generate_sample_news(self, symbol: str) -> List[Dict]:
+        """Generate sample news for demo"""
+        templates = [
+            f"{symbol} shows strong momentum amid market rally",
+            f"Analysts upgrade {symbol} target price to new highs",
+            f"{symbol} announces breakthrough in Q4 earnings",
+            f"Market watch: {symbol} among top performers today",
+            f"Technical analysis suggests bullish trend for {symbol}"
+        ]
+        
+        news = []
+        for i, title in enumerate(templates[:3]):
+            news.append({
+                'title': title,
+                'description': f"Lorem ipsum analysis for {symbol} showing positive trends...",
+                'url': f"https://example.com/news/{i}",
+                'published': (datetime.now() - timedelta(hours=i)).isoformat(),
+                'source': 'Demo News'
+            })
+        
+        return news
+    
+    def _is_cache_valid(self, key: str, duration: int = None) -> bool:
+        """Check if cached data is still valid"""
+        if key not in self.cache:
+            return False
+        
+        cache_duration = duration if duration else self.cache_duration
+        cache_time = self.cache[key].get('timestamp', 0)
+        
+        return (time.time() - cache_time) < cache_duration
+    
+    def _cache_data(self, key: str, data):
+        """Cache data with timestamp"""
+        self.cache[key] = {
+            'data': data,
+            'timestamp': time.time()
+        }
